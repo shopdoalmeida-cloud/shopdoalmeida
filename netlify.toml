@@ -1,0 +1,17 @@
+# Configuração de deploy e performance para Netlify
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Assets com hash no nome são imutáveis: permitir cache longo no navegador
+# elimina a revalidação (Etag/304) a cada visita e acelera muito o reabrir.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML nunca deve ficar em cache: sempre servir o deploy mais novo.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
