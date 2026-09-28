@@ -1,6 +1,9 @@
 // algoritmo-vendas-tks/src/components/Hero.jsx
 
-import { ArrowRight, Check, Gift, LockKeyhole, Sparkles, Verified } from 'lucide-react';
+import { ArrowRight, Check, LockKeyhole, Sparkles, Verified } from 'lucide-react';
+import balloonOne from '../assets/image/balao/balao1.webp';
+import balloonTwo from '../assets/image/balao/balao2.webp';
+import balloonThree from '../assets/image/balao/balao3.webp';
 import lucasImageDesktop from '../assets/image/lucas-fade-desktop.webp';
 import lucasImageMobile from '../assets/image/lucas-fade-mobile.webp';
 
@@ -10,6 +13,7 @@ export default function Hero() {
     { amount: 'R$ 10.458,90', time: 'hoje, 09:15' },
     { amount: 'R$ 5.872,40', time: 'ontem, 21:37' },
   ];
+  const desktopBalloons = [balloonOne, balloonTwo, balloonThree];
 
   return (
     <section className="relative overflow-hidden bg-neutral-950 px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
@@ -21,11 +25,10 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-0 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         {/* Left Content */}
-        <div className="-mt-6 order-2 text-center lg:order-1 lg:mt-0 lg:text-left">
+        <div className="hero-content -mt-6 order-2 text-center lg:order-1 lg:mt-0 lg:text-left">
           <div className="mx-auto max-w-2xl lg:mx-0">
             {/* Kicker */}
             <div className="hidden items-center gap-2 text-cyan-400 text-xs sm:text-sm font-medium uppercase tracking-wide lg:flex">
-              <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
               <span>Treinamento completo para TikTok Shop</span>
             </div>
 
@@ -39,21 +42,6 @@ export default function Hero() {
             <p className="mt-4 text-sm text-neutral-400 sm:text-base max-w-xl">
               O curso completo para aprender a vender no TikTok Shop através de vídeos, do básico ao avançado.
             </p>
-
-            {/* Bonus Box */}
-            <div className="bonus-highlight mt-5 flex items-start gap-3 rounded-xl border border-cyan-500/30 bg-cyan-950/20 p-3 text-left sm:p-4 backdrop-blur-sm">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 sm:h-12 sm:w-12">
-                <Gift className="h-5 w-5 sm:h-6 sm:w-6" />
-              </div>
-              <div>
-                <p className="font-semibold text-white text-xs sm:text-sm">
-                  Compre o treinamento e ganhe
-                </p>
-                <p className="text-xs text-neutral-400 sm:text-sm">
-                  uma análise de perfil completa gratuitamente!
-                </p>
-              </div>
-            </div>
 
             {/* CTA Button */}
             <a
@@ -186,27 +174,17 @@ export default function Hero() {
 
           {/* Sales Notifications - Desktop (Posicionado no canto direito) */}
           <div className="hidden lg:flex absolute right-0 top-0 z-30 w-64 xl:w-72 flex-col gap-3">
-            {salesNotifications.map((notification, index) => (
-              <div
-                key={index}
-                className="group rounded-2xl border border-white/10 bg-neutral-900/90 p-4 backdrop-blur-xl transition-all hover:border-cyan-500/30 hover:bg-neutral-800/90 hover:shadow-[0_0_20px_-5px_rgba(34,211,238,0.15)]"
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-neutral-800 to-neutral-900 shrink-0">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium text-white truncate">TikTok Shop</p>
-                    <p className="text-[10px] text-neutral-400">{notification.time}</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-neutral-400">Transferência recebida</p>
-                  <p className="text-lg font-bold text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]">{notification.amount}</p>
-                </div>
-              </div>
+            {desktopBalloons.map((balloon, index) => (
+              <img
+                key={balloon}
+                src={balloon}
+                width="320"
+                height="135"
+                loading="eager"
+                decoding="async"
+                alt={`Notificação de venda ${index + 1} no TikTok Shop`}
+                className="hero-desktop-balloon w-full object-contain transition-transform hover:scale-[1.02]"
+              />
             ))}
           </div>
         </div>

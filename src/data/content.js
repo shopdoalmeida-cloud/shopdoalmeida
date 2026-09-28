@@ -5,7 +5,7 @@ export const modules = [
   { id: 4, title: "🔥 HACK DE VENDAS EM VÍDEOS", lessons: ["Produtos com garantia de visualização", "Ganchos que ajudam a viralizar", "Descrição para aumentar a entrega dos vídeos", "CTA para gerar cliques no carrinho laranja"], isAdvanced: true, isLocked: false },
   { id: 5, title: "COMO ALCANÇAR DOIS MIL SEGUIDORES", lessons: ["Estratégia completa para alcançar dois mil seguidores", "Como crescer aparecendo", "Como crescer sem aparecer"], isAdvanced: false, isLocked: false },
   { id: 6, title: "EDIÇÃO DE VÍDEOS", lessons: ["Aprenda a editar vídeos para TikTok Shop", "Aula completa de edição de vídeo"], isAdvanced: false, isLocked: false },
-  { id: 7, title: "COMUNIDADE EXCLUSIVA", lessons: ["Análise de Perfil GRÁTIS"], isCommunity: true, isAdvanced: false, isLocked: false },
+  { id: 7, title: "COMUNIDADE EXCLUSIVA", lessons: ["Comunidade exclusiva!", "Pra que serve agência?"], isCommunity: true, isAdvanced: false, isLocked: false },
   { id: 8, title: "BÁSICO DE LIVE: FAZENDO SUA PRIMEIRA LIVE", lessons: ["Passo a passo para iniciar sua primeira live", "Como fazer uma live com dois celulares", "Qual produto escolher para vender na live"], isAdvanced: false, isLocked: false },
   { id: 9, title: "🔥 HACK DE VENDAS EM LIVE", lessons: ["O segredo para vender muito em Live", "Estratégias avançadas de engajamento", "Como escolher produtos vencedores"], isAdvanced: true, isLocked: false },
   { id: 10, title: "CONTEÚDO BLOQUEADO", lessons: ["E isso é apenas uma parte do treinamento…", "Desbloqueie seu acesso para visualizar todos os módulos e aulas."], isAdvanced: false, isLocked: true }
@@ -18,7 +18,7 @@ export const faqs = [
   { q: "O treinamento ensina Live?", a: "Sim. Existe um módulo de Live e também o Hack de Vendas em Live. Porém, o principal foco do treinamento é a venda através de vídeos." },
   { q: "O que é o Hack de Vendas em Vídeos?", a: "É o método avançado do treinamento, com estratégias de produtos, ganchos, descrições, CTA, alcance e outros elementos relacionados à criação de vídeos para vendas." },
   { q: "O treinamento é indicado para iniciantes?", a: "Sim. Existe uma estrutura inicial para quem ainda não sabe nada sobre TikTok Shop." },
-  { q: "Recebo algum bônus?", a: "Sim. Entre os bônus está uma análise de perfil completa gratuitamente após a compra, conforme as condições informadas." },
+  { q: "Recebo algum bônus ao entrar no treinamento?", a: "Sim. Você terá acesso a uma comunidade exclusiva com outros criadores do TikTok Shop para trocar experiências, compartilhar estratégias e tirar dúvidas. Eu também estarei presente no grupo, interagindo e respondendo às dúvidas dos criadores sempre que possível." },
   { q: "Existe garantia?", a: "Sim. São sete dias de garantia, conforme as condições da oferta." }
 ];
 

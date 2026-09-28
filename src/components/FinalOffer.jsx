@@ -1,4 +1,4 @@
-import { Gift, Shield, BookOpen } from 'lucide-react';
+import { Shield, BookOpen } from 'lucide-react';
 
 export default function FinalOffer() {
   return (
@@ -8,10 +8,6 @@ export default function FinalOffer() {
         <p className="text-xl text-gray-400 font-bold tracking-widest mb-10">APRENDA. APLIQUE. VENDA.</p>
 
         <div className="flex flex-col md:flex-row justify-center gap-6 mb-10">
-          <div className="flex items-center justify-center gap-3 bg-[#0c0c10] border border-white/10 px-6 py-4 rounded-xl">
-            <Gift className="w-6 h-6 text-[#00e0ff]" />
-            <span className="font-bold text-sm">Análise de Perfil Completa Gratuita</span>
-          </div>
           <div className="flex items-center justify-center gap-3 bg-[#0c0c10] border border-white/10 px-6 py-4 rounded-xl">
             <Shield className="w-6 h-6 text-[#3ddc84]" />
             <span className="font-bold text-sm">Sete Dias de Garantia</span>

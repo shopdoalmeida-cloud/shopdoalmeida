@@ -3,10 +3,12 @@ import Hero from './components/Hero';
 
 const loadModulesCarousel = () => import('./components/ModulesCarousel');
 const loadSocialProof = () => import('./components/SocialProof');
+const loadAboutMe = () => import('./components/AboutMe');
 const loadFinalSection = () => import('./components/FinalSection');
 
 const ModulesCarousel = lazy(loadModulesCarousel);
 const SocialProof = lazy(loadSocialProof);
+const AboutMe = lazy(loadAboutMe);
 const FinalSection = lazy(loadFinalSection);
 
 function DeferredSection({ children, minHeight, rootMargin = '650px 0px' }) {
@@ -52,12 +54,23 @@ const socialLinks = [
 ];
 
 function App() {
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [activeVideo, setActiveVideo] = useState(null);
   return (
     <main className="min-h-screen bg-[#050507] text-[#f5f7fa]">
       <Hero />
-      <DeferredSection minHeight="760px"><ModulesCarousel videoOpen={isVideoOpen} /></DeferredSection>
-      <DeferredSection minHeight="760px"><SocialProof isVideoOpen={isVideoOpen} onVideoOpenChange={setIsVideoOpen} /></DeferredSection>
+      <DeferredSection minHeight="760px"><ModulesCarousel videoOpen={Boolean(activeVideo)} /></DeferredSection>
+      <DeferredSection minHeight="760px">
+        <SocialProof
+          isVideoOpen={activeVideo === 'results'}
+          onVideoOpenChange={(isOpen) => setActiveVideo(isOpen ? 'results' : null)}
+        />
+      </DeferredSection>
+      <DeferredSection minHeight="1180px">
+        <AboutMe
+          isVideoOpen={activeVideo === 'about'}
+          onVideoOpenChange={(isOpen) => setActiveVideo(isOpen ? 'about' : null)}
+        />
+      </DeferredSection>
       <DeferredSection minHeight="680px"><FinalSection /></DeferredSection>
       
       <footer className="border-t border-white/5 px-4 py-8 text-center text-xs text-gray-600">

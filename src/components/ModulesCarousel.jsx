@@ -114,10 +114,6 @@ export default function ModulesCarousel({ videoOpen = false }) {
           </button>
         </div>
 
-        <div className="modules-offer-strip" aria-label="Bônus do treinamento">
-          <p><strong>Compre o treinamento e ganhe</strong><span>uma análise de perfil completa <b>gratuitamente!</b></span></p>
-          <a href="https://pay.kiwify.com.br/fxhc0Y8">QUERO GARANTIR MEU ACESSO <ArrowRight className="h-4 w-4" /></a>
-        </div>
       </div>
     </section>
   );

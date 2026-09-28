@@ -1,6 +1,6 @@
 import useEmblaCarousel from 'embla-carousel-react';
 import AutoScroll from 'embla-carousel-auto-scroll';
-import { ChevronLeft, ChevronRight, Gift, Play, ShieldCheck, X, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, ShieldCheck, UsersRound, X, Zap } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import useCarouselActivity from '../hooks/useCarouselActivity';
@@ -21,7 +21,7 @@ const resultItems = [
 // Duplicamos para dar slides suficientes ao loop do Embla em telas largas.
 const loopedResultItems = [...resultItems, ...resultItems];
 const benefits = [
-  { icon: Gift, title: 'Bônus exclusivo', text: 'Análise de perfil completa gratuitamente após a compra.', tone: 'cyan' },
+  { icon: UsersRound, title: 'Comunidade exclusiva', text: 'Grupo exclusivo com outros criadores, troca de experiências e minha participação respondendo dúvidas sempre que possível.', tone: 'cyan' },
   { icon: ShieldCheck, title: '7 dias de garantia', text: 'Conheça o treinamento e decida se ele é para você.', tone: 'cyan' },
   { icon: Zap, title: 'Acesso imediato', text: 'Com seu acesso liberado na hora, você já pode começar.', tone: 'pink' },
 ];
