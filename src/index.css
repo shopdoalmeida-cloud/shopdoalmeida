@@ -22,6 +22,7 @@ body {
 
 /* Evita pintar seções fora da viewport antes que o visitante precise delas. */
 .modules-section,
+.featured-video-section,
 .results-section,
 .about-section,
 .final-section {
@@ -30,6 +31,7 @@ body {
 }
 
 .is-safari .modules-section,
+.is-safari .featured-video-section,
 .is-safari .results-section,
 .is-safari .about-section,
 .is-safari .final-section {
@@ -144,6 +146,100 @@ body {
   box-shadow: 0 0 18px rgba(0, 224, 255, 0.18);
 }
 .hero-mobile-notification-amount { color: #00e0ff; }
+
+.featured-video-section {
+  padding: 74px 24px 82px;
+  background: #050507;
+}
+.featured-video-shell {
+  width: min(100%, 1240px);
+  margin: 0 auto;
+}
+.featured-video-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 3px solid var(--color-cyan);
+  border-radius: 8px;
+  background-color: #000;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 0 12px rgba(0, 224, 255, .65), 0 0 44px rgba(0, 224, 255, .2);
+}
+.featured-video-frame iframe,
+.featured-video-modal-dialog iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.featured-video-frame iframe { pointer-events: none; }
+.featured-video-expand {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  cursor: pointer;
+}
+.featured-video-expand-icon {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border: 2px solid rgba(255, 255, 255, .92);
+  border-radius: 50%;
+  background: rgba(3, 10, 14, .55);
+  box-shadow: 0 0 0 1px rgba(0, 224, 255, .6), 0 10px 35px rgba(0, 0, 0, .4);
+  opacity: 0;
+  transform: scale(.88);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.featured-video-expand-icon svg { width: 28px; height: 28px; }
+.featured-video-frame:hover .featured-video-expand-icon,
+.featured-video-expand:focus-visible .featured-video-expand-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+.featured-video-expand:focus-visible { outline: 3px solid #fff; outline-offset: -7px; }
+.featured-video-sound {
+  position: absolute;
+  z-index: 2;
+  right: 18px;
+  bottom: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 15px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(4, 9, 13, .84);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.featured-video-sound:hover { border-color: var(--color-cyan); background: rgba(0, 24, 31, .92); }
+.featured-video-sound:focus-visible { outline: 2px solid var(--color-cyan); outline-offset: 3px; }
+.featured-video-sound svg { width: 18px; height: 18px; color: var(--color-cyan); }
+.featured-video-modal-dialog {
+  position: relative;
+  width: min(100%, 1180px, calc(var(--video-available-height) * 1.7778));
+  aspect-ratio: 16 / 9;
+  border: 2px solid var(--color-cyan);
+  border-radius: 8px;
+  background: #000;
+  box-shadow: 0 0 22px rgba(0, 224, 255, .4), 0 24px 80px rgba(0, 0, 0, .7);
+}
+.featured-video-modal-dialog iframe { border-radius: 6px; }
 
 .modules-section { background: linear-gradient(180deg, #07080b, #050507); }
 .modules-heading { margin: 0 auto 34px; text-align: center; }
@@ -345,6 +441,12 @@ body {
   .hero-visual-wrap { width: calc(100% - 12px); }
   .hero-floating-note { right: -12px; top: 30%; transform: scale(.88); transform-origin: right center; }
   .hero-visual-bottom strong { font-size: 19px; }
+  .featured-video-section { padding: 52px 14px 60px; }
+  .featured-video-frame { border-width: 2px; box-shadow: 0 0 10px rgba(0, 224, 255, .5), 0 0 26px rgba(0, 224, 255, .16); }
+  .featured-video-expand-icon { width: 54px; height: 54px; opacity: .92; transform: none; }
+  .featured-video-expand-icon svg { width: 21px; height: 21px; }
+  .featured-video-sound { right: 10px; bottom: 10px; gap: 6px; padding: 8px 10px; font-size: 10px; }
+  .featured-video-sound svg { width: 15px; height: 15px; }
   .modules-section { padding-top: 64px; padding-bottom: 64px; }
   .modules-heading { margin-bottom: 24px; }
   .modules-heading h2 { font-size: 2.1rem; }

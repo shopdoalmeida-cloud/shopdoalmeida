@@ -2,11 +2,13 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import Hero from './components/Hero';
 
 const loadModulesCarousel = () => import('./components/ModulesCarousel');
+const loadFeaturedVideo = () => import('./components/FeaturedVideo');
 const loadSocialProof = () => import('./components/SocialProof');
 const loadAboutMe = () => import('./components/AboutMe');
 const loadFinalSection = () => import('./components/FinalSection');
 
 const ModulesCarousel = lazy(loadModulesCarousel);
+const FeaturedVideo = lazy(loadFeaturedVideo);
 const SocialProof = lazy(loadSocialProof);
 const AboutMe = lazy(loadAboutMe);
 const FinalSection = lazy(loadFinalSection);
@@ -58,6 +60,12 @@ function App() {
   return (
     <main className="min-h-screen bg-[#050507] text-[#f5f7fa]">
       <Hero />
+      <DeferredSection minHeight="clamp(360px, 67vw, 860px)" rootMargin="300px 0px">
+        <FeaturedVideo
+          isVideoOpen={activeVideo === 'featured'}
+          onVideoOpenChange={(isOpen) => setActiveVideo(isOpen ? 'featured' : null)}
+        />
+      </DeferredSection>
       <DeferredSection minHeight="760px"><ModulesCarousel videoOpen={Boolean(activeVideo)} /></DeferredSection>
       <DeferredSection minHeight="760px">
         <SocialProof
