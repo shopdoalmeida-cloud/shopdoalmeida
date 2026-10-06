@@ -56,22 +56,28 @@ const socialLinks = [
 ];
 
 function App() {
-  const [activeVideo, setActiveVideo] = useState(null);
+  const [activeInlineVideo, setActiveInlineVideo] = useState(null);
   return (
     <main className="min-h-screen bg-[#050507] text-[#f5f7fa]">
       <Hero />
       <DeferredSection minHeight="clamp(360px, 67vw, 860px)" rootMargin="300px 0px">
-        <FeaturedVideo />
+        <FeaturedVideo
+          shouldPause={activeInlineVideo !== null && activeInlineVideo !== 'featured'}
+          onActivate={() => setActiveInlineVideo('featured')}
+        />
       </DeferredSection>
-      <DeferredSection minHeight="760px"><ModulesCarousel videoOpen={Boolean(activeVideo)} /></DeferredSection>
+      <DeferredSection minHeight="760px"><ModulesCarousel /></DeferredSection>
       <DeferredSection minHeight="760px">
         <SocialProof
-          isVideoOpen={activeVideo === 'results'}
-          onVideoOpenChange={(isOpen) => setActiveVideo(isOpen ? 'results' : null)}
+          shouldPause={activeInlineVideo !== null && activeInlineVideo !== 'results'}
+          onActivate={() => setActiveInlineVideo('results')}
         />
       </DeferredSection>
       <DeferredSection minHeight="1180px">
-        <AboutMe />
+        <AboutMe
+          shouldPause={activeInlineVideo !== null && activeInlineVideo !== 'about'}
+          onActivate={() => setActiveInlineVideo('about')}
+        />
       </DeferredSection>
       <DeferredSection minHeight="680px"><FinalSection /></DeferredSection>
       

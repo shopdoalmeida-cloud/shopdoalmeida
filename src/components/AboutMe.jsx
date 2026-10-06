@@ -31,7 +31,7 @@ const polaroids = [
   { src: imageThree, alt: 'Lucas e sua esposa em uma viagem', caption: 'Momentos que me motivam' },
 ];
 
-export default function AboutMe() {
+export default function AboutMe({ shouldPause = false, onActivate }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const videoRef = useRef(null);
   const frameRef = useRef(null);
@@ -59,6 +59,10 @@ export default function AboutMe() {
   }, []);
 
   useEffect(() => {
+    if (shouldPause) videoRef.current?.pause();
+  }, [shouldPause]);
+
+  useEffect(() => {
     const updateFullscreenState = () => {
       const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       setIsFullscreen(fullscreenElement === frameRef.current);
@@ -75,6 +79,7 @@ export default function AboutMe() {
   const startWithSound = () => {
     const video = videoRef.current;
     if (!video) return;
+    onActivate?.();
     video.currentTime = 0;
     video.volume = 1;
     video.muted = false;
@@ -86,6 +91,7 @@ export default function AboutMe() {
   const toggleSound = () => {
     const video = videoRef.current;
     if (!video) return;
+    if (video.muted) onActivate?.();
     video.muted = !video.muted;
     if (!video.muted) video.volume = 1;
     setIsMuted(video.muted);
@@ -94,8 +100,16 @@ export default function AboutMe() {
   const togglePlayback = () => {
     const video = videoRef.current;
     if (!video) return;
-    if (video.paused) video.play().catch(() => {});
+    if (video.paused) {
+      onActivate?.();
+      video.play().catch(() => {});
+    }
     else video.pause();
+  };
+
+  const handleVideoClick = () => {
+    if (hasStarted) togglePlayback();
+    else startWithSound();
   };
 
   const seekVideo = (event) => {
@@ -111,13 +125,16 @@ export default function AboutMe() {
     const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
 
     if (fullscreenElement) {
-      if (document.exitFullscreen) document.exitFullscreen();
+      if (document.exitFullscreen) document.exitFullscreen()?.catch?.(() => {});
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       return;
     }
 
-    if (element?.requestFullscreen) element.requestFullscreen();
+    if (element?.requestFullscreen) {
+      element.requestFullscreen()?.catch?.(() => videoRef.current?.webkitEnterFullscreen?.());
+    }
     else if (element?.webkitRequestFullscreen) element.webkitRequestFullscreen();
+    else if (videoRef.current?.webkitEnterFullscreen) videoRef.current.webkitEnterFullscreen();
   };
 
   return (
@@ -161,8 +178,15 @@ export default function AboutMe() {
                 onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime || 0)}
               />
 
+              <button
+                type="button"
+                className="inline-video-click-surface"
+                aria-label={isPlaying && hasStarted ? 'Pausar vídeo' : 'Reproduzir vídeo'}
+                onClick={handleVideoClick}
+              />
+
               {!hasStarted && <span className="about-video-shade" aria-hidden="true" />}
-              {(!hasStarted || (isFullscreen && !isPlaying)) && (
+              {(!hasStarted || !isPlaying) && (
                 <button
                   type="button"
                   className="featured-video-play about-inline-video-play"

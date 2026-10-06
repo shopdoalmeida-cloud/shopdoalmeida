@@ -13,18 +13,33 @@ import { useEffect } from 'react';
  */
 export default function useCarouselActivity(emblaApi, isPaused) {
   useEffect(() => {
-    if (!emblaApi) return;
+    if (!emblaApi) return undefined;
 
     const autoScroll = emblaApi.plugins().autoScroll;
-    if (!autoScroll) return;
+    if (!autoScroll) return undefined;
 
-    if (isPaused) {
-      autoScroll.stop();
-    } else {
-      // Retoma a rolagem apenas se não estiver tocando, evitando resets desnecessários
-      if (!autoScroll.isPlaying()) {
+    const syncAutoScroll = () => {
+      if (isPaused) {
+        autoScroll.stop();
+      } else if (!autoScroll.isPlaying()) {
         autoScroll.play();
       }
+    };
+
+    syncAutoScroll();
+
+    if (isPaused) {
+      const animationFrame = requestAnimationFrame(syncAutoScroll);
+      const restartGuard = window.setTimeout(syncAutoScroll, 160);
+      emblaApi.on('pointerUp', syncAutoScroll);
+
+      return () => {
+        cancelAnimationFrame(animationFrame);
+        window.clearTimeout(restartGuard);
+        emblaApi.off('pointerUp', syncAutoScroll);
+      };
     }
+
+    return undefined;
   }, [emblaApi, isPaused]);
 }
