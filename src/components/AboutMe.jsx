@@ -1,14 +1,22 @@
-import { CalendarDays, ChevronDown, Heart, MapPin, Play, Quote, ShoppingBag, X } from 'lucide-react';
+import { CalendarDays, ChevronDown, Heart, MapPin, Maximize2, Minimize2, Pause, Play, Quote, ShoppingBag, Volume2, VolumeX } from 'lucide-react';
+import Hls from 'hls.js';
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import imageOne from '../assets/image/sobre-mim/imagem-1-optimized.webp';
 import imageTwo from '../assets/image/sobre-mim/imagem-2-optimized.webp';
 import imageThree from '../assets/image/sobre-mim/imagem-3-optimized.webp';
 import sideCollage from '../assets/image/sobre-mim/imagem-lateral-direita-optimized.webp';
 
-const bunnyVideoId = '8b6a41d3-74c5-4dca-bd66-41106af0dc7b';
-const bunnyVideoPoster = `https://vz-fda22be4-d2e.b-cdn.net/${bunnyVideoId}/thumbnail.jpg`;
-const bunnyVideoUrl = `https://player.mediadelivery.net/embed/665166/${bunnyVideoId}?autoplay=true&preload=true&playsinline=true`;
+const bunnyVideoId = 'e7823df1-bee3-48ca-84bd-7bb036ab79f0';
+const bunnyCdnHost = 'https://vz-fda22be4-d2e.b-cdn.net';
+const bunnyVideoPoster = `${bunnyCdnHost}/${bunnyVideoId}/thumbnail.jpg`;
+const bunnyVideoPlaylist = `${bunnyCdnHost}/${bunnyVideoId}/playlist.m3u8`;
+
+const formatTime = (seconds) => {
+  const safeSeconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainder = Math.floor(safeSeconds % 60);
+  return `${minutes}:${String(remainder).padStart(2, '0')}`;
+};
 
 const milestones = [
   { icon: CalendarDays, title: '21 anos', detail: 'Nascido em 26/11/2004' },
@@ -23,29 +31,94 @@ const polaroids = [
   { src: imageThree, alt: 'Lucas e sua esposa em uma viagem', caption: 'Momentos que me motivam' },
 ];
 
-export default function AboutMe({ isVideoOpen, onVideoOpenChange }) {
+export default function AboutMe() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const closeButtonRef = useRef(null);
+  const videoRef = useRef(null);
+  const frameRef = useRef(null);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    if (!isVideoOpen) return undefined;
+    const video = videoRef.current;
+    if (!video) return undefined;
 
-    const previouslyFocused = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    closeButtonRef.current?.focus({ preventScroll: true });
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = bunnyVideoPlaylist;
+      return undefined;
+    }
 
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') onVideoOpenChange(false);
+    if (!Hls.isSupported()) return undefined;
+    const hls = new Hls({ capLevelToPlayerSize: true });
+    hls.loadSource(bunnyVideoPlaylist);
+    hls.attachMedia(video);
+    return () => hls.destroy();
+  }, []);
+
+  useEffect(() => {
+    const updateFullscreenState = () => {
+      const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      setIsFullscreen(fullscreenElement === frameRef.current);
     };
 
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('fullscreenchange', updateFullscreenState);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenState);
     return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', onKeyDown);
-      if (previouslyFocused?.isConnected) previouslyFocused.focus({ preventScroll: true });
+      document.removeEventListener('fullscreenchange', updateFullscreenState);
+      document.removeEventListener('webkitfullscreenchange', updateFullscreenState);
     };
-  }, [isVideoOpen, onVideoOpenChange]);
+  }, []);
+
+  const startWithSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = 0;
+    video.volume = 1;
+    video.muted = false;
+    video.play().catch(() => {});
+    setHasStarted(true);
+    setIsMuted(false);
+  };
+
+  const toggleSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    if (!video.muted) video.volume = 1;
+    setIsMuted(video.muted);
+  };
+
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) video.play().catch(() => {});
+    else video.pause();
+  };
+
+  const seekVideo = (event) => {
+    const video = videoRef.current;
+    if (!video) return;
+    const nextTime = Number(event.target.value);
+    video.currentTime = nextTime;
+    setCurrentTime(nextTime);
+  };
+
+  const toggleFullscreen = () => {
+    const element = frameRef.current;
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (fullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      return;
+    }
+
+    if (element?.requestFullscreen) element.requestFullscreen();
+    else if (element?.webkitRequestFullscreen) element.webkitRequestFullscreen();
+  };
 
   return (
     <section className="about-section" id="sobre-mim">
@@ -72,15 +145,66 @@ export default function AboutMe({ isVideoOpen, onVideoOpenChange }) {
           </div>
 
           <div className="about-media">
-            <button type="button" className="about-video-card" aria-haspopup="dialog" aria-label="Assistir à história de Lucas Almeida Pereira" onClick={() => onVideoOpenChange(true)}>
-              <img src={bunnyVideoPoster} alt="" width="1280" height="720" loading="lazy" decoding="async" />
-              <span className="about-video-shade" aria-hidden="true" />
-              <span className="about-video-content">
-                <span className="about-video-play"><Play aria-hidden="true" /></span>
+            <div ref={frameRef} className="about-video-card">
+              <video
+                ref={videoRef}
+                poster={bunnyVideoPoster}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+                onDurationChange={(event) => setDuration(event.currentTarget.duration || 0)}
+                onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime || 0)}
+              />
+
+              {!hasStarted && <span className="about-video-shade" aria-hidden="true" />}
+              {(!hasStarted || (isFullscreen && !isPlaying)) && (
+                <button
+                  type="button"
+                  className="featured-video-play about-inline-video-play"
+                  aria-label={hasStarted ? 'Continuar vídeo' : 'Assistir à história com áudio desde o início'}
+                  onClick={hasStarted ? togglePlayback : startWithSound}
+                >
+                  <Play aria-hidden="true" fill="currentColor" />
+                </button>
+              )}
+              {!hasStarted && <span className="about-video-content">
                 <strong>Assista minha história</strong>
-                <small>1:30 min</small>
-              </span>
-            </button>
+                <small>{duration ? `${formatTime(duration)} min` : 'Minha história'}</small>
+              </span>}
+
+              <div className={`featured-video-controls${isFullscreen ? ' is-fullscreen' : ''}`}>
+                {isFullscreen && (
+                  <button type="button" aria-label={isPlaying ? 'Pausar vídeo' : 'Continuar vídeo'} onClick={togglePlayback}>
+                    {isPlaying ? <Pause aria-hidden="true" fill="currentColor" /> : <Play aria-hidden="true" fill="currentColor" />}
+                  </button>
+                )}
+                {isFullscreen && (
+                  <div className="featured-video-progress">
+                    <input
+                      type="range"
+                      min="0"
+                      max={Math.max(duration, 0.1)}
+                      step="0.1"
+                      value={Math.min(currentTime, Math.max(duration, 0.1))}
+                      aria-label="Andamento do vídeo"
+                      onChange={seekVideo}
+                    />
+                    <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                  </div>
+                )}
+                <button type="button" aria-label={isMuted ? 'Ativar som' : 'Mutar som'} onClick={toggleSound}>
+                  {isMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+                </button>
+                <button type="button" aria-label={isFullscreen ? 'Sair da tela cheia' : 'Exibir vídeo em tela cheia'} onClick={toggleFullscreen}>
+                  {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
+                </button>
+              </div>
+            </div>
             <img className="about-side-collage" src={sideCollage} alt="Lucas e sua esposa em momentos especiais" width="640" height="960" loading="lazy" decoding="async" />
           </div>
         </div>
@@ -114,24 +238,6 @@ export default function AboutMe({ isVideoOpen, onVideoOpenChange }) {
         </div>
       </div>
 
-      {isVideoOpen && createPortal(
-        <div className="video-modal" role="presentation" onClick={() => onVideoOpenChange(false)}>
-          <div className="about-video-modal-dialog" role="dialog" aria-modal="true" aria-label="Minha história" onClick={(event) => event.stopPropagation()}>
-            <button ref={closeButtonRef} type="button" className="video-modal-close" aria-label="Fechar vídeo" onClick={() => onVideoOpenChange(false)}>
-              <X aria-hidden="true" />
-            </button>
-            <iframe
-              width="1280"
-              height="720"
-              src={bunnyVideoUrl}
-              title="A história de Lucas Almeida Pereira"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>,
-        document.body,
-      )}
     </section>
   );
 }

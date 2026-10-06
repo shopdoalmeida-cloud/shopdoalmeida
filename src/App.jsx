@@ -61,10 +61,7 @@ function App() {
     <main className="min-h-screen bg-[#050507] text-[#f5f7fa]">
       <Hero />
       <DeferredSection minHeight="clamp(360px, 67vw, 860px)" rootMargin="300px 0px">
-        <FeaturedVideo
-          isVideoOpen={activeVideo === 'featured'}
-          onVideoOpenChange={(isOpen) => setActiveVideo(isOpen ? 'featured' : null)}
-        />
+        <FeaturedVideo />
       </DeferredSection>
       <DeferredSection minHeight="760px"><ModulesCarousel videoOpen={Boolean(activeVideo)} /></DeferredSection>
       <DeferredSection minHeight="760px">
@@ -74,10 +71,7 @@ function App() {
         />
       </DeferredSection>
       <DeferredSection minHeight="1180px">
-        <AboutMe
-          isVideoOpen={activeVideo === 'about'}
-          onVideoOpenChange={(isOpen) => setActiveVideo(isOpen ? 'about' : null)}
-        />
+        <AboutMe />
       </DeferredSection>
       <DeferredSection minHeight="680px"><FinalSection /></DeferredSection>
       

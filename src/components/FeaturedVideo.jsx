@@ -1,76 +1,180 @@
-import { Maximize2, Volume2, X } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { ArrowRight, Maximize2, Minimize2, Pause, Play, Volume2, VolumeX } from 'lucide-react';
+import Hls from 'hls.js';
+import { useEffect, useRef, useState } from 'react';
 
-const bunnyLibraryId = '665166';
 const bunnyVideoId = '5a2bcc4d-6c3b-414a-ba5d-d64a07129189';
-const bunnyPoster = `https://vz-fda22be4-d2e.b-cdn.net/${bunnyVideoId}/thumbnail.jpg`;
-const bunnyPreviewUrl = `https://player.mediadelivery.net/embed/${bunnyLibraryId}/${bunnyVideoId}?autoplay=true&muted=true&loop=true&preload=true&playsinline=true&controls=false`;
-const bunnyExpandedUrl = `https://player.mediadelivery.net/embed/${bunnyLibraryId}/${bunnyVideoId}?autoplay=true&preload=true&playsinline=true`;
+const bunnyCdnHost = 'https://vz-fda22be4-d2e.b-cdn.net';
+const bunnyPoster = `${bunnyCdnHost}/${bunnyVideoId}/thumbnail.jpg`;
+const bunnyPlaylist = `${bunnyCdnHost}/${bunnyVideoId}/playlist.m3u8`;
+const checkoutUrl = 'https://pay.kiwify.com.br/fxhc0Y8';
 
-export default function FeaturedVideo({ isVideoOpen, onVideoOpenChange }) {
-  const closeButtonRef = useRef(null);
+const formatTime = (seconds) => {
+  const safeSeconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainder = Math.floor(safeSeconds % 60);
+  return `${minutes}:${String(remainder).padStart(2, '0')}`;
+};
+
+export default function FeaturedVideo() {
+  const videoRef = useRef(null);
+  const frameRef = useRef(null);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    if (!isVideoOpen) return undefined;
+    const video = videoRef.current;
+    if (!video) return undefined;
 
-    const previouslyFocused = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    closeButtonRef.current?.focus({ preventScroll: true });
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = bunnyPlaylist;
+      return undefined;
+    }
 
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') onVideoOpenChange(false);
+    if (!Hls.isSupported()) return undefined;
+    const hls = new Hls({ capLevelToPlayerSize: true });
+    hls.loadSource(bunnyPlaylist);
+    hls.attachMedia(video);
+    return () => hls.destroy();
+  }, []);
+
+  useEffect(() => {
+    const updateFullscreenState = () => {
+      const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      setIsFullscreen(fullscreenElement === frameRef.current);
     };
 
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('fullscreenchange', updateFullscreenState);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenState);
     return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', onKeyDown);
-      if (previouslyFocused?.isConnected) previouslyFocused.focus({ preventScroll: true });
+      document.removeEventListener('fullscreenchange', updateFullscreenState);
+      document.removeEventListener('webkitfullscreenchange', updateFullscreenState);
     };
-  }, [isVideoOpen, onVideoOpenChange]);
+  }, []);
 
-  const openVideo = () => onVideoOpenChange(true);
-  const closeVideo = () => onVideoOpenChange(false);
+  const startWithSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = 0;
+    video.volume = 1;
+    video.muted = false;
+    video.play().catch(() => {});
+    setHasStarted(true);
+    setIsMuted(false);
+  };
+
+  const toggleSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    if (!video.muted) video.volume = 1;
+    setIsMuted(video.muted);
+  };
+
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) video.play().catch(() => {});
+    else video.pause();
+  };
+
+  const seekVideo = (event) => {
+    const video = videoRef.current;
+    if (!video) return;
+    const nextTime = Number(event.target.value);
+    video.currentTime = nextTime;
+    setCurrentTime(nextTime);
+  };
+
+  const toggleFullscreen = () => {
+    const element = frameRef.current;
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (fullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      return;
+    }
+
+    if (element?.requestFullscreen) element.requestFullscreen();
+    else if (element?.webkitRequestFullscreen) element.webkitRequestFullscreen();
+  };
 
   return (
-    <section className="featured-video-section" aria-label="Vídeo em destaque">
+    <section className="featured-video-section" aria-labelledby="featured-video-title">
       <div className="featured-video-shell">
-        <div className="featured-video-frame" style={{ backgroundImage: `url(${bunnyPoster})` }}>
-          <iframe
-            src={bunnyPreviewUrl}
-            title="Prévia do treinamento Algoritmo de Vendas TKS"
-            allow="autoplay; fullscreen; picture-in-picture"
-            loading="eager"
-            tabIndex="-1"
+        <header className="featured-video-heading">
+          <span className="featured-video-prompt">APERTE O PLAY</span>
+          <h2 id="featured-video-title">Assista ao vídeo e descubra como funciona</h2>
+        </header>
+
+        <div ref={frameRef} className="featured-video-frame">
+          <video
+            ref={videoRef}
+            poster={bunnyPoster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+            onDurationChange={(event) => setDuration(event.currentTarget.duration || 0)}
+            onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime || 0)}
           />
-          <button type="button" className="featured-video-expand" aria-haspopup="dialog" aria-label="Ampliar vídeo e assistir com áudio" onClick={openVideo}>
-            <span className="featured-video-expand-icon" aria-hidden="true"><Maximize2 /></span>
-          </button>
-          <button type="button" className="featured-video-sound" aria-haspopup="dialog" onClick={openVideo}>
-            <Volume2 aria-hidden="true" />
-            <span>Ouvir vídeo</span>
-          </button>
+
+          {(!hasStarted || (isFullscreen && !isPlaying)) && (
+            <button
+              type="button"
+              className="featured-video-play"
+              aria-label={hasStarted ? 'Continuar vídeo' : 'Assistir vídeo com áudio desde o início'}
+              onClick={hasStarted ? togglePlayback : startWithSound}
+            >
+              <Play aria-hidden="true" fill="currentColor" />
+            </button>
+          )}
+
+          <div className={`featured-video-controls${isFullscreen ? ' is-fullscreen' : ''}`}>
+            {isFullscreen && (
+              <button type="button" aria-label={isPlaying ? 'Pausar vídeo' : 'Continuar vídeo'} onClick={togglePlayback}>
+                {isPlaying ? <Pause aria-hidden="true" fill="currentColor" /> : <Play aria-hidden="true" fill="currentColor" />}
+              </button>
+            )}
+            {isFullscreen && (
+              <div className="featured-video-progress">
+                <input
+                  type="range"
+                  min="0"
+                  max={Math.max(duration, 0.1)}
+                  step="0.1"
+                  value={Math.min(currentTime, Math.max(duration, 0.1))}
+                  aria-label="Andamento do vídeo"
+                  onChange={seekVideo}
+                />
+                <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+              </div>
+            )}
+            <button type="button" aria-label={isMuted ? 'Ativar som' : 'Mutar som'} onClick={toggleSound}>
+              {isMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+            </button>
+            <button type="button" aria-label={isFullscreen ? 'Sair da tela cheia' : 'Exibir vídeo em tela cheia'} onClick={toggleFullscreen}>
+              {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="featured-video-offer">
+          <span>ALGORITMO DE VENDAS TKS</span>
+          <a href={checkoutUrl}>
+            <span>COMECE AGORA</span>
+            <ArrowRight aria-hidden="true" />
+          </a>
         </div>
       </div>
-
-      {isVideoOpen && createPortal(
-        <div className="video-modal featured-video-modal" role="presentation" onClick={closeVideo}>
-          <div className="featured-video-modal-dialog" role="dialog" aria-modal="true" aria-label="Vídeo em destaque" onClick={(event) => event.stopPropagation()}>
-            <button ref={closeButtonRef} type="button" className="video-modal-close" aria-label="Fechar vídeo" onClick={closeVideo}>
-              <X aria-hidden="true" />
-            </button>
-            <iframe
-              src={bunnyExpandedUrl}
-              title="Algoritmo de Vendas TKS"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>,
-        document.body,
-      )}
     </section>
   );
 }

@@ -156,7 +156,7 @@ export default function Hero() {
               {salesNotifications.slice(0, 2).map((notification, index) => (
                 <div
                   key={index}
-                  className={`hero-mobile-notification group w-[35%] rounded-lg border border-white/10 bg-neutral-950/90 p-1.5 backdrop-blur-xl transition-all hover:border-cyan-500/30 ${index === 1 ? 'mt-8' : ''}`}
+                  className={`hero-mobile-notification hero-balloon-motion group w-[35%] rounded-lg border border-white/10 bg-neutral-950/90 p-1.5 backdrop-blur-xl transition-all hover:border-cyan-500/30 ${index === 1 ? 'mt-8' : ''}`}
                 >
                   <div className="mb-0.5 flex items-center gap-1">
                     <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-neutral-800 to-neutral-900 shrink-0">
@@ -175,16 +175,17 @@ export default function Hero() {
           {/* Sales Notifications - Desktop (Posicionado no canto direito) */}
           <div className="hidden lg:flex absolute right-0 top-0 z-30 w-64 xl:w-72 flex-col gap-3">
             {desktopBalloons.map((balloon, index) => (
-              <img
-                key={balloon}
-                src={balloon}
-                width="320"
-                height="135"
-                loading="eager"
-                decoding="async"
-                alt={`Notificação de venda ${index + 1} no TikTok Shop`}
-                className="hero-desktop-balloon w-full object-contain transition-transform hover:scale-[1.02]"
-              />
+              <div className="hero-desktop-balloon-motion" key={balloon}>
+                <img
+                  src={balloon}
+                  width="320"
+                  height="135"
+                  loading="eager"
+                  decoding="async"
+                  alt={`Notificação de venda ${index + 1} no TikTok Shop`}
+                  className="hero-desktop-balloon w-full object-contain transition-transform hover:scale-[1.02]"
+                />
+              </div>
             ))}
           </div>
         </div>
